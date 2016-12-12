@@ -37,7 +37,7 @@
           ng-click="incrementDownvotes(post)"></span>
         {{post.downvotes}}
         <span style="font-size:20px; margin-left:10px;">
-          <a ng-show="post.link" href="{{post.link}}">
+          <a ng-show="post.link" href="{{post.link}}" target="_blank">
             {{post.title}}
           </a>
           <span ng-hide="post.link">

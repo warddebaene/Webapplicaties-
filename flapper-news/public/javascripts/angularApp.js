@@ -4,10 +4,10 @@ app.factory('auth', ['$http', '$window', function($http, $window){
   var auth = {};
 
   auth.saveToken = function(token){
-    $window.localStorage['flapper-new-token'] = token;
+    $window.localStorage['flapper-news-token'] = token;
   }
   auth.getToken = function(){
-    return $window.localStorage['flapper-new-token'];
+    return $window.localStorage['flapper-news-token'];
   }
 
   auth.isLoggedIn = function () {
@@ -42,8 +42,8 @@ app.factory('auth', ['$http', '$window', function($http, $window){
     })
   }
 
-  auth.logout = function() {
-    $window.localStorage.removeItem('flapper-new-token');
+  auth.logOut = function() {
+    $window.localStorage.removeItem('flapper-news-token');
     
   }
 
@@ -53,7 +53,7 @@ app.factory('auth', ['$http', '$window', function($http, $window){
 }])
 
 
-app.factory('posts', ['$http', 'auth', function($http){
+app.factory('posts', ['$http', 'auth', function($http, auth){
 var o = {
     posts: []
   };
@@ -69,49 +69,51 @@ var o = {
     });
   };
 
-  o.create = function(post){
+  o.create = function(post) {
     return $http.post('/posts', post, {
-      headers: {Authorization: 'Bearer' + auth.getToken()}
+      headers: {Authorization: 'Bearer '+auth.getToken()}
     }).success(function(data){
       o.posts.push(data);
     });
   };
 
   o.upvote = function(post) {
-    return $http.put('/posts/' + post._id+ '/upvote', null, {
-      headers: {Authorization: 'Bearer' + auth.getToken()}
+    return $http.put('/posts/' + post._id + '/upvote', null, {
+      headers: {Authorization: 'Bearer '+auth.getToken()}
     }).success(function(data){
-      post.upvotes +=1;
-    });
-  };
-  o.downvote = function(post) {
-    return $http.put('/posts/' + post._id+ '/downvote', null, {
-      headers: {Authorization: 'Bearer' + auth.getToken()}
-    }).success(function(data){
-      post.downvotes +=1;
-    });
-  };
-  o.addComment = function(id, comment) {
-    return $http.post('/posts/' + id + '/comments', comment, {
-      headers: {Authorization: 'Bearer' + auth.getToken()}
-    });
-  };
-  o.upvoteComment = function(post,comment) {
-    return $http.put('/posts/' + post._id + '/comments/'+ comment._id + '/upvote', null, {
-      headers: {Authorization: 'Bearer' + auth.getToken()}
-    })
-    .success(function(data){
-      comment.upvotes +=1;
-    });
-  };
-  o.downvoteComment = function(post,comment) {
-    return $http.put('/posts/' + post._id + '/comments/' + comment._id + '/downvote', null, {
-      headers: {Authorization: 'Bearer' + auth.getToken()}
-    }).success(function(data){
-      comment.downvotes +=1;
+      post.upvotes += 1;
     });
   };
 
+  o.downvote = function(post) {
+    return $http.put('/posts/' + post._id + '/downvote', null, {
+      headers: {Authorization: 'Bearer '+auth.getToken()}
+    }).success(function(data){
+      post.downvotes += 1;
+    });
+  };
+
+  o.addComment = function(id, comment) {
+    return $http.post('/posts/' + id + '/comments', comment, {
+      headers: {Authorization: 'Bearer '+auth.getToken()}
+    });
+  };
+
+  o.upvoteComment = function(post, comment) {
+    return $http.put('/posts/' + post._id + '/comments/'+ comment._id + '/upvote', null, {
+      headers: {Authorization: 'Bearer '+auth.getToken()}
+    }).success(function(data){
+      comment.upvotes += 1;
+    });
+  };
+
+  o.downvoteComment = function(post, comment) {
+    return $http.put('/posts/' + post._id + '/comments/'+ comment._id + '/downvote', null, {
+      headers: {Authorization: 'Bearer '+auth.getToken()}
+    }).success(function(data){
+      comment.downvotes += 1;
+    });
+  };
 
   return o;
 }]);
